@@ -1,4 +1,4 @@
-import { PrismaService } from '../src/database/orms/prisma/prisma.service';
+import { PrismaService } from '../src/infrastructure/database/orms/prisma/prisma.service';
 
 async function seed() {
   const prisma = new PrismaService();
