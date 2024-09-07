@@ -1,11 +1,13 @@
-FROM node:20-alpine
+FROM node:lts
 
-WORKDIR /home/node/app
-COPY package*.json /home/node/app/
+WORKDIR /app
+
+COPY package*.json ./
 
 RUN npm install
 
 COPY . .
 
+RUN npx prisma generate
 EXPOSE 5174
-CMD ["npm", "run", "start:dev"]
+

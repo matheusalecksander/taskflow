@@ -1,25 +1,46 @@
-version: "3.7"
+version: '3.8'
 
 services:
-  client:
-    build:
-      context: ./taskflow-client
-      dockerfile: Dockerfile
-    depends_on:
-      - server
+  db:
+    image: postgres:15.2
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123
+      POSTGRES_DB: database
     ports:
-      - 5173:5173
+      - "5432:5432"
     volumes:
-      - ./taskflow-client:/home/node/app
-      - /home/node/app/node_modules
+      - postgres_data:/var/lib/postgresql/data
 
   server:
     build:
       context: ./taskflow-server
       dockerfile: Dockerfile
+    environment:
+      DATABASE_URL: postgresql://postgres:123@db:5432/taskflow
+    depends_on:
+      - db
     ports:
-      - 5174:5174
+      - "5174:5174"
+    command: ["npm", "run", "start:dev:prisma-migrate-seed"]
     volumes:
-      - ./taskflow-server:/home/node/app
-      - /home/node/app/node_modules
+      - ./taskflow-server:/app
     restart: always
+
+  client:
+    build:
+      context: ./taskflow-client
+      dockerfile: Dockerfile
+    ports:
+      - "5173:5173"
+    depends_on:
+      - server
+    volumes:
+      - ./taskflow-client:/app
+    stdin_open: true
+    tty: true
+    restart: always
+
+volumes:
+  postgres_data:
