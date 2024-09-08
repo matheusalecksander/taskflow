@@ -9,15 +9,34 @@ datasource db {
 }
 
 model Users {
-  id       String     @id @default(uuid())
-  name     String
-  email    String
-  password String
-  role     UsersRoles
+  id               String     @id @default(uuid())
+  name             String
+  email            String
+  password         String
+  role             UsersRoles @default(USER)
+  ownedTasks       Tasks[]    @relation("ownedTasks")
+  responsibleTasks Tasks[]    @relation("responsibleTasks")
+}
+
+model Tasks {
+  id            String     @id @default(uuid())
+  name          String
+  description   String     @db.Text
+  status        TaskStatus @default(CREATED)
+  owner         Users      @relation("ownedTasks", fields: [ownerId], references: [id])
+  ownerId       String
+  responsible   Users      @relation("responsibleTasks", fields: [responsibleId], references: [id])
+  responsibleId String
 }
 
 enum UsersRoles {
   USER
   ADMIN
   MASTER
+}
+
+enum TaskStatus {
+  CREATED
+  IN_PROGRESS
+  COMPLETED
 }
