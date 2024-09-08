@@ -5,7 +5,7 @@ async function seed() {
 
   const dbSeeded = await prisma.users.findUnique({
     where: {
-      id: 'e6f57cff-7b1b-40ea-99c6-09b58a9d524b',
+      id: 'e6f57cff-7b1b-40ea-99c6-09b58a9d523b',
     },
   });
 
@@ -15,11 +15,11 @@ async function seed() {
 
   await prisma.users.create({
     data: {
-      id: 'e6f57cff-7b1b-40ea-99c6-09b58a9d524b',
+      id: 'e6f57cff-7b1b-40ea-99c6-09b58a9d523b',
       email: 'admin@admin.com',
       password: 'admin',
       name: 'Admin',
-      role: 'ADMIN',
+      role: 'MASTER',
     },
   });
 
