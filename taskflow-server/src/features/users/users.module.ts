@@ -5,8 +5,10 @@ import { UsersRepository } from './domain/contracts/repository/users.repository.
 import { PrismaUsersRepository } from 'src/infrastructure/database/orms/prisma/repositories/users.prisma.repository';
 import { PrismaService } from 'src/infrastructure/database/orms/prisma/prisma.service';
 import { CryptoService } from 'src/_utils/crypto.service';
+import { AuthModule } from 'src/_core/auth/auth.module';
 
 @Module({
+  imports: [AuthModule],
   controllers: [UsersController],
   providers: [
     UsersService,
@@ -17,5 +19,6 @@ import { CryptoService } from 'src/_utils/crypto.service';
     },
     CryptoService,
   ],
+  exports: [UsersService],
 })
 export class UsersModule {}

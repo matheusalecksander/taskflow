@@ -1,23 +1,42 @@
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
-import { JwtStrategy } from './jwt.strategy';
 import 'dotenv/config';
 import { envs } from '../environment/vars';
+import { AuthService } from './auth.service';
+import { AuthController } from './auth.controller';
+import { UsersService } from 'src/features/users/application/services/users.service';
+import { UsersRepository } from 'src/features/users/domain/contracts/repository/users.repository.contract';
+import { PrismaUsersRepository } from 'src/infrastructure/database/orms/prisma/repositories/users.prisma.repository';
+import { CryptoService } from 'src/_utils/crypto.service';
+import { PrismaService } from 'src/infrastructure/database/orms/prisma/prisma.service';
+import { JwtStrategy } from './jwt.strategy';
 
 @Module({
   imports: [
     PassportModule,
-    JwtModule.register({
-      secret: envs.get('JWT_SECRET'),
-      publicKey: envs.get('JWT_SECRET'),
-      privateKey: envs.get('JWT_PRIVATE_SECRET'),
-      signOptions: {
-        expiresIn: '600s',
-        algorithm: 'RS256',
-      },
+    JwtModule.registerAsync({
+      useFactory: () => ({
+        secret: envs.get('JWT_SECRET'),
+        publicKey: envs.get('JWT_SECRET'),
+        privateKey: envs.get('JWT_PRIVATE_SECRET'),
+        signOptions: {
+          expiresIn: '600s',
+        },
+      }),
     }),
   ],
-  providers: [JwtStrategy],
+  controllers: [AuthController],
+  providers: [
+    AuthService,
+    UsersService,
+    PrismaService,
+    {
+      provide: UsersRepository,
+      useClass: PrismaUsersRepository,
+    },
+    CryptoService,
+    JwtStrategy,
+  ],
 })
 export class AuthModule {}

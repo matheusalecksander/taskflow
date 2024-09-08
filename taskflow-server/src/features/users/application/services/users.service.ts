@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateUser } from '../../domain/contracts/inputs/createUsers';
 import { UsersRepository } from '../../domain/contracts/repository/users.repository.contract';
 import { CryptoService } from 'src/_utils/crypto.service';
@@ -23,5 +27,25 @@ export class UsersService {
     });
 
     return user;
+  }
+
+  async findByEmail(email: string) {
+    const user = await this.repository.findByEmail(email);
+
+    if (!user) {
+      throw new BadRequestException('Usuário não encontrado');
+    }
+
+    return user;
+  }
+
+  async list() {
+    const users = await this.repository.list();
+
+    if (!users.length) {
+      throw new NotFoundException('Nenhum usuário encontrado');
+    }
+
+    return users;
   }
 }
