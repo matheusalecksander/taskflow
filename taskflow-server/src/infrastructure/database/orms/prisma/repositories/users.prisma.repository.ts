@@ -14,7 +14,6 @@ export class PrismaUsersRepository implements UsersRepository {
           email: data.email,
           password: data.password,
           name: data.name,
-          role: 'USER',
         },
       });
 
@@ -45,6 +44,21 @@ export class PrismaUsersRepository implements UsersRepository {
       const users = await this.prismaService.users.findMany();
 
       return users;
+    } catch (error) {
+      console.error(error.message);
+      return null;
+    }
+  }
+
+  async findById(id: string): Promise<User> {
+    try {
+      const user = await this.prismaService.users.findUnique({
+        where: {
+          id,
+        },
+      });
+
+      return user;
     } catch (error) {
       console.error(error.message);
       return null;
