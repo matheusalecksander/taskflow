@@ -5,11 +5,11 @@ import 'dotenv/config';
 import { envs } from '../environment/vars';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
-import { UsersService } from 'src/features/users/application/services/users.service';
-import { UsersRepository } from 'src/features/users/domain/contracts/repository/users.repository.contract';
-import { PrismaUsersRepository } from 'src/infrastructure/database/orms/prisma/repositories/users.prisma.repository';
-import { CryptoService } from 'src/_utils/crypto.service';
-import { PrismaService } from 'src/infrastructure/database/orms/prisma/prisma.service';
+import { UsersService } from '../../features/users/application/services/users.service';
+import { UsersRepository } from '../../features/users/domain/contracts/repository/users.repository.contract';
+import { PrismaUsersRepository } from '../../infrastructure/database/orms/prisma/repositories/users.prisma.repository';
+import { CryptoService } from '../../_utils/crypto.service';
+import { PrismaService } from '../../infrastructure/database/orms/prisma/prisma.service';
 import { JwtStrategy } from './jwt.strategy';
 
 @Module({
