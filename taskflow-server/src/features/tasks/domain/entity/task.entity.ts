@@ -8,4 +8,10 @@ export class Tasks {
   status: TaskStatus;
   owner: User;
   responsible?: User;
+
+  constructor(props?: Tasks) {
+    if (props) {
+      Object.assign(this, props);
+    }
+  }
 }
