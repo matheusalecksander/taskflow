@@ -5,6 +5,7 @@ import { CreateTask } from '../../domain/contracts/inputs/createTask';
 import { UsersRoles } from '../../../../features/users/domain/enuns/userRoles';
 import { BadRequestException, ForbiddenException } from '@nestjs/common';
 import { TaskStatus } from '../../domain/enuns/taskStatus';
+import { UpdateTask } from '../contracts/inputs/updateTask';
 
 const makeFakeTask = (): CreateTask => ({
   description: 'any_description',
@@ -30,6 +31,8 @@ describe('TasksService', () => {
           useValue: {
             create: jest.fn(),
             findByNameAndIdOwner: jest.fn(),
+            findById: jest.fn(),
+            update: jest.fn(),
           },
         },
       ],
@@ -92,6 +95,104 @@ describe('TasksService', () => {
       jest.spyOn(tasksRepository, 'create').mockResolvedValueOnce(createdTask);
       const response = await sut.create(task);
       expect(response).toEqual(createdTask);
+    });
+  });
+
+  describe('Update', () => {
+    it('should throw if task not found', async () => {
+      const task = makeFakeTask();
+      jest.spyOn(tasksRepository, 'findById').mockResolvedValueOnce(null);
+      const promise = sut.update({
+        taskId: 'any_id',
+        user: task.user,
+        name: 'any_name',
+        description: 'any_description',
+      });
+      await expect(promise).rejects.toThrow(
+        new BadRequestException('Tarefa não localizada'),
+      );
+    });
+
+    it('should throw if user is not the owner or responsible', async () => {
+      const task = makeFakeTask();
+      jest.spyOn(tasksRepository, 'findById').mockResolvedValueOnce({
+        ...task,
+        owner: { id: 'another_user_id' },
+        responsible: { id: 'another_user_id' },
+      } as any);
+      const promise = sut.update({
+        taskId: 'any_id',
+        user: task.user,
+        name: 'any_name',
+        description: 'any_description',
+      });
+      await expect(promise).rejects.toThrow(
+        new ForbiddenException(
+          'Você não tem permissão para editar esta tarefa',
+        ),
+      );
+    });
+
+    it('should call repository with correct values', async () => {
+      const task = makeFakeTask();
+      jest.spyOn(tasksRepository, 'findById').mockResolvedValueOnce({
+        ...task,
+        owner: task.user,
+      } as any);
+      const updatedTask: UpdateTask = {
+        taskId: 'any_id',
+        user: task.user,
+        name: 'updated_name',
+        description: 'updated_description',
+        responsibleId: 'updated_responsible_id',
+        status: TaskStatus.IN_PROGRESS,
+      };
+      jest.spyOn(tasksRepository, 'update').mockResolvedValueOnce({} as any);
+      await sut.update(updatedTask);
+      expect(tasksRepository.update).toHaveBeenCalledWith({
+        taskId: updatedTask.taskId,
+        name: updatedTask.name,
+        description: updatedTask.description,
+        responsibleId: updatedTask.responsibleId,
+        status: updatedTask.status,
+      });
+    });
+
+    it('should throw if repository returns false', async () => {
+      const task = makeFakeTask();
+      jest.spyOn(tasksRepository, 'findById').mockResolvedValueOnce({
+        ...task,
+        owner: task.user,
+      } as any);
+      jest.spyOn(tasksRepository, 'update').mockResolvedValueOnce(false);
+      const promise = sut.update({
+        taskId: 'any_id',
+        user: task.user,
+        name: 'any_name',
+        description: 'any_description',
+      });
+      await expect(promise).rejects.toThrow(
+        new BadRequestException('Ocorreu um erro ao atualizar a tarefa'),
+      );
+    });
+
+    it('should return true on success', async () => {
+      const task = makeFakeTask();
+      jest.spyOn(tasksRepository, 'findById').mockResolvedValueOnce({
+        ...task,
+        owner: task.user,
+      } as any);
+      const updatedTask: UpdateTask = {
+        taskId: 'any_id',
+        user: task.user,
+        name: 'updated_name',
+        description: 'updated_description',
+        responsibleId: 'updated_responsible_id',
+        status: TaskStatus.IN_PROGRESS,
+      };
+      jest.spyOn(tasksRepository, 'update').mockResolvedValueOnce(true);
+      const response = await sut.update(updatedTask);
+      expect(response).toBe(true);
     });
   });
 });
