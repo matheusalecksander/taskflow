@@ -124,4 +124,30 @@ export class PrismaTasksRepository implements TasksRepository {
       return false;
     }
   }
+
+  async findAll(): Promise<Tasks[]> {
+    try {
+      const tasks = await this.prismaService.tasks.findMany({
+        include: {
+          owner: true,
+          responsible: true,
+        },
+      });
+
+      if (!tasks.length) {
+        return [];
+      }
+
+      return tasks.map(
+        (task) =>
+          new Tasks({
+            ...task,
+            status: TaskStatus[task.status],
+          }),
+      );
+    } catch (error) {
+      console.error(error);
+      return [];
+    }
+  }
 }

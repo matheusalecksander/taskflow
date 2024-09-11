@@ -12,4 +12,5 @@ export abstract class TasksRepository {
       'taskId' | 'name' | 'description' | 'status' | 'responsibleId'
     >,
   ): Promise<boolean>;
+  abstract findAll(): Promise<Tasks[]>;
 }

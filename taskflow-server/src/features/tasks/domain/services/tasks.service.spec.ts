@@ -3,7 +3,11 @@ import { TasksService } from './tasks.service';
 import { TasksRepository } from '../../domain/contracts/repository/tasks.repository.contract';
 import { CreateTask } from '../../domain/contracts/inputs/createTask';
 import { UsersRoles } from '../../../../features/users/domain/enuns/userRoles';
-import { BadRequestException, ForbiddenException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  NotFoundException,
+} from '@nestjs/common';
 import { TaskStatus } from '../../domain/enuns/taskStatus';
 import { UpdateTask } from '../contracts/inputs/updateTask';
 
@@ -33,6 +37,7 @@ describe('TasksService', () => {
             findByNameAndIdOwner: jest.fn(),
             findById: jest.fn(),
             update: jest.fn(),
+            findAll: jest.fn(),
           },
         },
       ],
@@ -193,6 +198,32 @@ describe('TasksService', () => {
       jest.spyOn(tasksRepository, 'update').mockResolvedValueOnce(true);
       const response = await sut.update(updatedTask);
       expect(response).toBe(true);
+    });
+  });
+
+  describe('FindAll', () => {
+    it('should throw if repository returns empty array', async () => {
+      jest.spyOn(tasksRepository, 'findAll').mockResolvedValueOnce([]);
+      const promise = sut.findAll();
+      await expect(promise).rejects.toThrow(
+        new NotFoundException('Nenhuma tarefa encontrada'),
+      );
+    });
+
+    it('should return tasks on success', async () => {
+      const task = makeFakeTask();
+      const createdTask = [
+        {
+          ...task,
+          owner: task.user,
+          responsible: null,
+          status: TaskStatus.CREATED,
+          id: 'any_id',
+        },
+      ];
+      jest.spyOn(tasksRepository, 'findAll').mockResolvedValueOnce(createdTask);
+      const response = await sut.findAll();
+      expect(response).toEqual(createdTask);
     });
   });
 });

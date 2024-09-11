@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Get,
   Param,
   Patch,
   Post,
@@ -47,5 +48,11 @@ export class TasksController {
       taskId,
       user: req.user as IUser,
     });
+  }
+
+  @Get()
+  @UseGuards(JwtAuthGuard)
+  async findAll() {
+    return this.service.findAll();
   }
 }

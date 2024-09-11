@@ -32,6 +32,7 @@ describe('TasksController', () => {
           useValue: {
             create: jest.fn(),
             update: jest.fn(),
+            findAll: jest.fn(),
           },
         },
       ],
@@ -160,6 +161,35 @@ describe('TasksController', () => {
         .set('Authorization', `Bearer ${token}`)
         .expect(200)
         .expect({});
+    });
+  });
+
+  describe('FindAll', () => {
+    it('should call service with correct values', async () => {
+      await supertest(app.getHttpServer())
+        .get('/tasks')
+        .set('Authorization', `Bearer ${token}`)
+        .expect(200);
+      expect(tasksService.findAll).toHaveBeenCalled();
+    });
+
+    it('should return 200 on success', async () => {
+      const task = makeFakeTask();
+      const createdTask = [
+        {
+          ...task,
+          owner: task.user,
+          responsible: null,
+          status: TaskStatus.CREATED,
+          id: 'any_id',
+        },
+      ];
+      jest.spyOn(tasksService, 'findAll').mockResolvedValueOnce(createdTask);
+      await supertest(app.getHttpServer())
+        .get('/tasks')
+        .set('Authorization', `Bearer ${token}`)
+        .expect(200)
+        .expect(createdTask);
     });
   });
 });

@@ -2,6 +2,7 @@ import {
   BadRequestException,
   ForbiddenException,
   Injectable,
+  NotFoundException,
 } from '@nestjs/common';
 import { CreateTask } from '../../domain/contracts/inputs/createTask';
 import { TasksRepository } from '../../domain/contracts/repository/tasks.repository.contract';
@@ -66,5 +67,15 @@ export class TasksService {
     }
 
     return result;
+  }
+
+  async findAll() {
+    const tasks = await this.repository.findAll();
+
+    if (!tasks.length) {
+      throw new NotFoundException('Nenhuma tarefa encontrada');
+    }
+
+    return tasks;
   }
 }
