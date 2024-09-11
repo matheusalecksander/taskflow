@@ -1,5 +1,5 @@
 import { Body, Controller, Post, Req, UseGuards } from '@nestjs/common';
-import { TasksService } from '../services/tasks.service';
+import { TasksService } from '../../domain/services/tasks.service';
 import { JwtAuthGuard } from '../../../../_core/auth/jwt-auth.guard';
 import { CreateTask } from '../../domain/contracts/inputs/createTask';
 import { Request } from 'express';
