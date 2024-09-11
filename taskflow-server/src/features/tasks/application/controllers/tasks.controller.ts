@@ -55,4 +55,10 @@ export class TasksController {
   async findAll() {
     return this.service.findAll();
   }
+
+  @Get(':id')
+  @UseGuards(JwtAuthGuard)
+  async findById(@Param('id') taskId: string) {
+    return this.service.findById(taskId);
+  }
 }

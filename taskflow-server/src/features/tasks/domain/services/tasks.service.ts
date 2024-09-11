@@ -42,11 +42,7 @@ export class TasksService {
   }
 
   async update({ taskId, user, ...taskData }: UpdateTask) {
-    const task = await this.repository.findById(taskId);
-
-    if (!task) {
-      throw new BadRequestException('Tarefa não localizada');
-    }
+    const task = await this.findById(taskId);
 
     if (
       task.owner.id !== user.id ||
@@ -77,5 +73,15 @@ export class TasksService {
     }
 
     return tasks;
+  }
+
+  async findById(taskId: string) {
+    const task = await this.repository.findById(taskId);
+
+    if (!task) {
+      throw new BadRequestException('Tarefa não localizada');
+    }
+
+    return task;
   }
 }

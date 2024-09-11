@@ -226,4 +226,38 @@ describe('TasksService', () => {
       expect(response).toEqual(createdTask);
     });
   });
+
+  describe('FindById', () => {
+    it('should call repository with correct values', async () => {
+      const taskId = 'any_id';
+      jest.spyOn(tasksRepository, 'findById').mockResolvedValueOnce({} as any);
+      await sut.findById(taskId);
+      expect(tasksRepository.findById).toHaveBeenCalledWith(taskId);
+    });
+
+    it('should throw if repository returns null', async () => {
+      const taskId = 'any_id';
+      jest.spyOn(tasksRepository, 'findById').mockResolvedValueOnce(null);
+      const promise = sut.findById(taskId);
+      await expect(promise).rejects.toThrow(
+        new BadRequestException('Tarefa não localizada'),
+      );
+    });
+
+    it('should return task on success', async () => {
+      const task = makeFakeTask();
+      const createdTask = {
+        ...task,
+        owner: task.user,
+        responsible: null,
+        status: TaskStatus.CREATED,
+        id: 'any_id',
+      };
+      jest
+        .spyOn(tasksRepository, 'findById')
+        .mockResolvedValueOnce(createdTask);
+      const response = await sut.findById('any_id');
+      expect(response).toEqual(createdTask);
+    });
+  });
 });
