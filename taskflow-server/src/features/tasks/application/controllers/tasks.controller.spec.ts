@@ -31,6 +31,7 @@ describe('TasksController', () => {
           provide: TasksService,
           useValue: {
             create: jest.fn(),
+            update: jest.fn(),
           },
         },
       ],
@@ -118,6 +119,47 @@ describe('TasksController', () => {
         .set('Authorization', `Bearer ${token}`)
         .expect(201)
         .expect(createdTask);
+    });
+  });
+  describe('Update', () => {
+    it('should return 400 if body is empty', async () => {
+      jest.spyOn(tasksService, 'update').mockResolvedValueOnce(true);
+      await supertest(app.getHttpServer())
+        .patch('/tasks/any_id')
+        .send({})
+        .set('Authorization', `Bearer ${token}`)
+        .expect(400);
+    });
+
+    it('should call service with correct values', async () => {
+      const task = makeFakeTask();
+      const user = {
+        id: 'any_user_id',
+        name: 'any_name',
+        role: 'any_role',
+        email: 'any_email',
+      };
+      await supertest(app.getHttpServer())
+        .patch('/tasks/any_id')
+        .send(task)
+        .set('Authorization', `Bearer ${token}`)
+        .expect(200);
+      expect(tasksService.update).toHaveBeenCalledWith({
+        ...task,
+        user,
+        taskId: 'any_id',
+      });
+    });
+
+    it('should return 200 on success', async () => {
+      const task = makeFakeTask();
+      jest.spyOn(tasksService, 'update').mockResolvedValueOnce(true);
+      await supertest(app.getHttpServer())
+        .patch('/tasks/any_id')
+        .send(task)
+        .set('Authorization', `Bearer ${token}`)
+        .expect(200)
+        .expect({});
     });
   });
 });
