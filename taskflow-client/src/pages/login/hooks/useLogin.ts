@@ -2,16 +2,9 @@
 import { useCallback } from "react";
 import { LoginSchema } from "../validator/zod/loginSchema";
 import { api } from "../../../_api";
+import { setItem } from "../../../utils/localStorage";
 
 export function useLogin() {
-	const getItem = useCallback((key: string) => {
-		return localStorage.getItem(key);
-	}, []);
-
-	const setItem = useCallback((key: string, value: string) => {
-		localStorage.setItem(key, value);
-	}, []);
-
 	const login = useCallback(
 		async (loginData: LoginSchema) => {
 			try {
@@ -25,11 +18,10 @@ export function useLogin() {
 				return null;
 			}
 		},
-		[setItem],
+		[]
 	);
 
 	return {
 		login,
-		getItem,
 	};
 }

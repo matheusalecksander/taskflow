@@ -1,9 +1,8 @@
 import { PropsWithChildren, useEffect } from "react";
-import { useLogin } from "../../pages/login/hooks/useLogin";
 import { useNavigate } from "react-router-dom";
+import { getItem } from "../../utils/localStorage";
 
 export function PrivateRoute({ children }: Readonly<PropsWithChildren>) {
-  const { getItem } = useLogin();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -12,7 +11,7 @@ export function PrivateRoute({ children }: Readonly<PropsWithChildren>) {
     if (!token) {
       navigate("/");
     }
-  }, [getItem, navigate]);
+  }, [navigate]);
 
   return <div>{children}</div>;
 }
