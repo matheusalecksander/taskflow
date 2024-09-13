@@ -14,7 +14,7 @@ git clone https://github.com/matheusalecksander/taskflow.git
   DATABASE_URL=postgresql://postgres:123@localhost:5432/taskflow
 ```
 
-2. Entre na pasta taskflow-server e execute o projeto
+3. Entre na pasta taskflow-server e execute o projeto
 
 ```
 cd taskflow-server && npm run start:dev
@@ -24,6 +24,13 @@ Este comando irá iniciar o banco de dados, que está rodando via docker, depois
 as migrações para criar as tabelas no banco de dados, fará um seed para registrar um usuário e por
 fim irá iniciar a API
 
+### Teste unitários
+
+Para verificar os testes unitários execute
+
+```bash
+npm run test
+```
 
 ### Como executar o frontend
 
