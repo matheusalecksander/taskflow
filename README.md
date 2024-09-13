@@ -3,7 +3,7 @@
 1. Clone este projeto
 
 ```bash
-git clone ...
+git clone https://github.com/matheusalecksander/taskflow.git
 ```
 
 2. Crie um arquivo .env e insira os seguintes dados
