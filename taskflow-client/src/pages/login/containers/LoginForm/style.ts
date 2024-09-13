@@ -21,3 +21,7 @@ export const Input = styled.input`
 	padding: ${({ theme }) => theme.spacing(2)};
 	height: 2rem;
 `;
+
+export const Feedback = styled.span`
+	color: ${({ theme }) => theme.colors.error.main};
+`
